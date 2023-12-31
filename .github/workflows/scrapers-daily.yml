@@ -1,0 +1,28 @@
+name: scrapers-daily
+
+# Run daily at 17:30 UTC (9:30 PST)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '30 17 * * *'
+
+jobs:
+  scrapers-daily:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v4
+      with:
+        repository: neyre/scripts
+        ref: main
+        ssh-key: ${{ secrets.SCRIPTS_ACCESS_PRIVATE_KEY }}
+        path: scripts
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - name: Run daily scripts silently
+      shell: bash
+      working-directory: scripts/scrapers
+      run: |
+        ./scrapers_daily.sh >/dev/null 2>&1
